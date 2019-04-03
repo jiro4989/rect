@@ -9,9 +9,9 @@ func init() {
 }
 
 var RootCommand = &cobra.Command{
-	Use:     "rect",
-	Short:   "rect is text rectangle editor",
+	Use:   "rect",
+	Short: "rect is text rectangle editor",
 	//Example: "rect right README.md",
 	Version: Version,
-	Long: ``,
+	Long:    ``,
 }
