@@ -78,6 +78,19 @@ func TestPasteLine(t *testing.T) {
 
 }
 
+func TestPadSpace(t *testing.T) {
+	assert.Equal(t, "abc  ", PadSpace("abcde", "abc", PasteConfig{X: 0, Padding: " "}))
+	assert.Equal(t, " abc ", PadSpace("abcde", "abc", PasteConfig{X: 1, Padding: " "}))
+	assert.Equal(t, "  abc", PadSpace("abcde", "abc", PasteConfig{X: 2, Padding: " "}))
+	assert.Equal(t, "   abc", PadSpace("abcde", "abc", PasteConfig{X: 3, Padding: " "}))
+
+	assert.Equal(t, "abc 　", PadSpace("abcdef", "abc", PasteConfig{X: 0, Padding: "　"}))
+	assert.Equal(t, "abc　", PadSpace("abcde", "abc", PasteConfig{X: 0, Padding: "　"}))
+	assert.Equal(t, " abc ", PadSpace("abcde", "abc", PasteConfig{X: 1, Padding: "　"}))
+	assert.Equal(t, "　abc", PadSpace("abcde", "abc", PasteConfig{X: 2, Padding: "　"}))
+	assert.Equal(t, "　 abc", PadSpace("abcde", "abc", PasteConfig{X: 3, Padding: "　"}))
+}
+
 // func TestPaste(t *testing.T) {
 // 	assert.Equal(t, []string{"abc45", "def90", "ghide"}, Paste([]string{"12345", "67890", "abcde"}, []string{"abc", "def", "ghi"}, PasteConfig{Padding: " "}), "Paste 0,0 axis")
 // 	assert.Equal(t, []string{"12345", "6abc0", "adefe", " ghi "}, Paste([]string{"12345", "67890", "abcde"}, []string{"abc", "def", "ghi"}, PasteConfig{X: 1, Y: 1, Padding: " "}), "Paste 1,1 axis")

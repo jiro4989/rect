@@ -2,6 +2,7 @@ package rect
 
 import (
 	"fmt"
+	"strings"
 
 	"github.com/mattn/go-runewidth"
 )
@@ -114,6 +115,41 @@ func PasteLine(src []MetaRune, inputData []MetaRune) (ret []MetaRune) {
 			panic(msg)
 		}
 	}
+	return
+}
+
+func PadSpace(src, inputData string, config PasteConfig) (ret string) {
+	pad := config.Padding
+	padIsFullWidth := runewidth.StringWidth(pad) == 2
+
+	var leftPad string
+	x := config.X
+	if x%2 != 0 && padIsFullWidth {
+		inputData = " " + inputData
+		x--
+	}
+	if padIsFullWidth {
+		x /= 2
+	}
+	leftPad += strings.Repeat(pad, x)
+	inputData = leftPad + inputData
+
+	inL := runewidth.StringWidth(inputData)
+	srcL := runewidth.StringWidth(src)
+	if inL < srcL {
+		diff := srcL - inL
+		var rightPad string
+		if diff%2 != 0 && padIsFullWidth {
+			rightPad += " "
+			diff--
+		}
+		if padIsFullWidth {
+			diff /= 2
+		}
+		rightPad += strings.Repeat(pad, diff)
+		inputData += rightPad
+	}
+	ret = inputData
 	return
 }
 
