@@ -15,7 +15,10 @@ const (
 	RelationNext
 )
 
-var empty = MetaRune{Value: ' ', Relation: RelationNone}
+var (
+	empty       = MetaRune{Value: ' ', Relation: RelationNone}
+	whiteSpaces = " 　"
+)
 
 type MetaRune struct {
 	Value    rune
@@ -80,9 +83,11 @@ func Paste(src []string, inputData []string, config PasteConfig) (ret []rune) {
 	return
 }
 
-func PasteLine(src []MetaRune, inputData []MetaRune) (ret []MetaRune) {
+func PasteLine(src []MetaRune, inputData []MetaRune, config PasteConfig) (ret []MetaRune) {
 	ret = make([]MetaRune, len(src))
 	copy(ret, src)
+
+	ignoreWhiteSpace := config.IgnoreWhiteSpace
 
 	setFunc := func(ret []MetaRune, mr MetaRune, i int) {
 		switch mr.Relation {
@@ -100,12 +105,14 @@ func PasteLine(src []MetaRune, inputData []MetaRune) (ret []MetaRune) {
 	}
 
 	for i, mr := range inputData {
+		if ignoreWhiteSpace && strings.ContainsRune(whiteSpaces, mr.Value) {
+			continue
+		}
 		s := ret[i]
 		switch s.Relation {
 		case RelationNone:
 			setFunc(ret, mr, i)
 		case RelationPrev:
-			// ret[i-1] = MetaRune{Value: ' ', Relation: RelationNone}
 			setFunc(ret, mr, i)
 		case RelationNext:
 			ret[i+1] = MetaRune{Value: ' ', Relation: RelationNone}
