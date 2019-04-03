@@ -80,7 +80,7 @@ func Paste(src []string, inputData []string, config PasteConfig) (ret []rune) {
 	return
 }
 
-func PasteLine(src []MetaRune, inputData []MetaRune) (ret []MetaRune) {
+func PasteLine(src, inputData []MetaRune) (ret []MetaRune) {
 	ret = make([]MetaRune, len(src))
 	copy(ret, src)
 
@@ -113,6 +113,50 @@ func PasteLine(src []MetaRune, inputData []MetaRune) (ret []MetaRune) {
 		default:
 			msg := fmt.Sprintf("illegal relation value. relation=%v", s)
 			panic(msg)
+		}
+	}
+	return
+}
+
+func ReplateIgnore(inputData, src []MetaRune, ignore string) (ret []MetaRune) {
+	if len(inputData) < 1 || len(src) < 1 {
+		return inputData
+	}
+
+	ret = make([]MetaRune, len(inputData))
+	copy(ret, inputData)
+
+	for i, ir := range ret {
+		if len(src) <= i {
+			break
+		}
+
+		sm := src[i]
+		if strings.ContainsRune(ignore, ir.Value) {
+			switch sm.Relation {
+			case RelationNone, RelationPrev:
+				ret[i] = sm
+			case RelationNext:
+				if len(ret) <= i+1 {
+					continue
+				}
+				ir2 := ret[i+1]
+				if strings.ContainsRune(ignore, ir2.Value) {
+					ret[i] = sm
+					ret[i+1] = src[i+1]
+				}
+			}
+		}
+	}
+	// NextとPrevが対になっていないものを修正
+	for i := 0; i < len(ret)-1; i++ {
+		if ret[i].Relation == RelationNext && ret[i+1].Relation != RelationPrev {
+			ret[i] = MetaRune{Value: ' ', Relation: RelationNone}
+			continue
+		}
+		if ret[i].Relation == RelationPrev && ret[i-1].Relation != RelationNext {
+			ret[i] = MetaRune{Value: ' ', Relation: RelationNone}
+			continue
 		}
 	}
 	return

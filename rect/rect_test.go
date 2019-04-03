@@ -78,6 +78,24 @@ func TestPasteLine(t *testing.T) {
 
 }
 
+func TestReplaceIgnore(t *testing.T) {
+	assert.Equal(t, toMetaRune("ab1de"), ReplateIgnore(toMetaRune("  1  "), toMetaRune("abcde"), " 　"))
+	assert.Equal(t, toMetaRune("ab1de"), ReplateIgnore(toMetaRune("　1　"), toMetaRune("abcde"), " 　"))
+	assert.Equal(t, toMetaRune("あ1い"), ReplateIgnore(toMetaRune("  1  "), toMetaRune("あcい"), " 　"))
+	assert.Equal(t, toMetaRune("あ1い"), ReplateIgnore(toMetaRune("　1　"), toMetaRune("あcい"), " 　"))
+	assert.Equal(t, toMetaRune("1 123"), ReplateIgnore(toMetaRune("　1　"), toMetaRune("1あ23"), " 　"))
+	assert.Equal(t, toMetaRune("1 1い"), ReplateIgnore(toMetaRune("　1　"), toMetaRune("1あい"), " 　"))
+	assert.Equal(t, toMetaRune("121 3"), ReplateIgnore(toMetaRune("　1　"), toMetaRune("12あ3"), " 　"))
+	assert.Equal(t, toMetaRune("abc1efg"), ReplateIgnore(toMetaRune(" 　1　 "), toMetaRune("abcdefg"), " 　"))
+	assert.Equal(t, toMetaRune("abcあefg"), ReplateIgnore(toMetaRune(" 　あ　 "), toMetaRune("abcddefg"), " 　"))
+	assert.Equal(t, toMetaRune(" 1"), ReplateIgnore(toMetaRune(" 1"), toMetaRune("あ"), " 　"))
+	assert.Equal(t, toMetaRune(" "), ReplateIgnore(toMetaRune(" "), toMetaRune("あ"), " 　"))
+	assert.Equal(t, toMetaRune("あ"), ReplateIgnore(toMetaRune("  "), toMetaRune("あ"), " 　"))
+	assert.Equal(t, toMetaRune("あ"), ReplateIgnore(toMetaRune("　"), toMetaRune("あ"), " 　"))
+	assert.Equal(t, toMetaRune(""), ReplateIgnore(toMetaRune(""), toMetaRune("あ"), " 　"))
+	assert.Equal(t, toMetaRune("  "), ReplateIgnore(toMetaRune("  "), toMetaRune(""), " 　"))
+}
+
 func TestPadSpace(t *testing.T) {
 	assert.Equal(t, "abc  ", PadSpace("abcde", "abc", PasteConfig{X: 0, Padding: " "}))
 	assert.Equal(t, " abc ", PadSpace("abcde", "abc", PasteConfig{X: 1, Padding: " "}))
