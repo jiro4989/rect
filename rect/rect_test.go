@@ -35,15 +35,13 @@ func TestToMetaRunes(t *testing.T) {
 }
 
 func TestPasteLine(t *testing.T) {
-	c := PasteConfig{}
-
 	assert.Equal(t, []MetaRune{
 		{Value: 'a', Relation: RelationNone},
 		{Value: 'b', Relation: RelationNone},
 		{Value: 'c', Relation: RelationNone},
 		{Value: ' ', Relation: RelationNone},
 	},
-		PasteLine(toMetaRune("あい"), toMetaRune("abc"), c))
+		PasteLine(toMetaRune("あい"), toMetaRune("abc")))
 
 	assert.Equal(t, []MetaRune{
 		{Value: ' ', Relation: RelationNone},
@@ -51,7 +49,7 @@ func TestPasteLine(t *testing.T) {
 		{Value: 'b', Relation: RelationNone},
 		{Value: 'c', Relation: RelationNone},
 	},
-		PasteLine(toMetaRune("あい"), toMetaRune(" abc"), c))
+		PasteLine(toMetaRune("あい"), toMetaRune(" abc")))
 
 	assert.Equal(t, []MetaRune{
 		{Value: ' ', Relation: RelationNone},
@@ -59,7 +57,15 @@ func TestPasteLine(t *testing.T) {
 		{Value: 'あ', Relation: RelationPrev},
 		{Value: ' ', Relation: RelationNone},
 	},
-		PasteLine(toMetaRune("あい"), toMetaRune(" あ "), c))
+		PasteLine(toMetaRune("あい"), toMetaRune(" あ ")))
+
+	assert.Equal(t, []MetaRune{
+		{Value: ' ', Relation: RelationNone},
+		{Value: 'あ', Relation: RelationNext},
+		{Value: 'あ', Relation: RelationPrev},
+		{Value: ' ', Relation: RelationNone},
+	},
+		PasteLine(toMetaRune("あい"), toMetaRune(" あ ")))
 
 	assert.Equal(t, []MetaRune{
 		{Value: '　', Relation: RelationNext},
@@ -68,49 +74,7 @@ func TestPasteLine(t *testing.T) {
 		{Value: 'あ', Relation: RelationNext},
 		{Value: 'あ', Relation: RelationPrev},
 	},
-		PasteLine(toMetaRune("12345"), toMetaRune("　aあ"), c))
-
-	c = PasteConfig{IgnoreWhiteSpace: true}
-
-	assert.Equal(t, []MetaRune{
-		{Value: 'a', Relation: RelationNone},
-		{Value: 'あ', Relation: RelationNext},
-		{Value: 'あ', Relation: RelationPrev},
-	},
-		PasteLine(toMetaRune("aあ"), toMetaRune("   "), c))
-
-	assert.Equal(t, []MetaRune{
-		{Value: 'a', Relation: RelationNone},
-		{Value: 'b', Relation: RelationNone},
-		{Value: 'c', Relation: RelationNone},
-		{Value: ' ', Relation: RelationNone},
-	},
-		PasteLine(toMetaRune("あい"), toMetaRune("abc"), c))
-
-	assert.Equal(t, []MetaRune{
-		{Value: ' ', Relation: RelationNone},
-		{Value: 'a', Relation: RelationNone},
-		{Value: 'b', Relation: RelationNone},
-		{Value: 'c', Relation: RelationNone},
-	},
-		PasteLine(toMetaRune("あい"), toMetaRune(" abc"), c))
-
-	assert.Equal(t, []MetaRune{
-		{Value: ' ', Relation: RelationNone},
-		{Value: 'あ', Relation: RelationNext},
-		{Value: 'あ', Relation: RelationPrev},
-		{Value: ' ', Relation: RelationNone},
-	},
-		PasteLine(toMetaRune("あい"), toMetaRune(" あ "), c))
-
-	assert.Equal(t, []MetaRune{
-		{Value: '1', Relation: RelationNone},
-		{Value: '2', Relation: RelationNone},
-		{Value: 'a', Relation: RelationNone},
-		{Value: 'あ', Relation: RelationNext},
-		{Value: 'あ', Relation: RelationPrev},
-	},
-		PasteLine(toMetaRune("12345"), toMetaRune("　aあ"), c))
+		PasteLine(toMetaRune("12345"), toMetaRune("　aあ")))
 
 }
 
