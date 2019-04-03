@@ -29,6 +29,7 @@ require (
 	github.com/kr/pty v1.1.4 // indirect
 	github.com/mattn/go-colorable v0.1.1 // indirect
 	github.com/mattn/go-isatty v0.0.7 // indirect
+	github.com/mattn/go-runewidth v0.0.4
 	github.com/mitchellh/go-homedir v1.1.0 // indirect
 	github.com/nbutton23/zxcvbn-go v0.0.0-20180912185939-ae427f1e4c1d // indirect
 	github.com/onsi/ginkgo v1.8.0 // indirect
