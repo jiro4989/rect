@@ -1,0 +1,22 @@
+:toc:
+:sectnums:
+
+= rect
+
+rect is rectangle editor.
+
+== Development
+
+go 1.12
+
+== Usage
+
+[source,bash]
+----
+rect trim -X 4 -Y 4 -W 40 -Y 40
+rect trim -W 40 -Y 40
+rect paste -X 4 -Y 4 input_data.txt edit_target.txt
+rect paste -X 4 -Y 4 --insert input_data.txt edit_target.txt
+echo -e 'あいうえお\nかきくけこ\nさしすせそ' | rect paste -X 1 -Y 1 --insert input_data.txt 
+----
+
