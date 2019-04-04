@@ -51,44 +51,57 @@ func toMetaRunes(s []string) (ret [][]MetaRune) {
 	return
 }
 
-func toRunes(s []string) (ret [][]rune) {
-	for _, line := range s {
-		var buf []rune
-		for _, c := range line {
-			buf = append(buf, c)
+func maxWidth(s []string) (ret int) {
+	for _, v := range s {
+		l := runewidth.StringWidth(v)
+		if ret < l {
+			ret = l
 		}
-		ret = append(ret, buf)
 	}
 	return
 }
 
-func Paste(src []string, inputData []string, config PasteConfig) (ret []rune) {
-	// pad := config.Padding
-	// X := config.X
-	// padLen := runewidth.StringWidth(pad)
-	// useFullWidthPadding := padLen < 2
-	//
-	// srcMetaRunes := toMetaRune(src)
-	// inputMetaRunes := toMetaRune(inputData)
-	//
-	// for i, mr := range inputMetaRunes {
-	// 	if i < X {
-	// 		continue
-	// 	}
-	// 	srcM := srcMetaRunes[i]
-	// }
+func Paste(src []string, inputData []string, config PasteConfig) (ret [][]MetaRune) {
+	ret = toMetaRunes(src)
+	max := maxWidth(src)
+	for i, line := range inputData {
+		// 貼り付け開始行数をずらす
+		y := config.Y
+		y += i
+
+		// もとのテキストの行数超過があった場合は空白で埋める
+		var srcLine string
+		if len(src) <= y {
+			srcLine = strings.Repeat(" ", max)
+			line = PadSpace(line, max, config)
+		} else {
+			srcLine = src[y]
+		}
+		paddedMeta := toMetaRune(line)
+
+		// 空白の時に元のテキストを残す
+		if config.IgnoreWhiteSpace {
+			paddedMeta = ReplateIgnore(toMetaRune(srcLine), paddedMeta, " 　")
+		}
+
+		srcMeta := toMetaRune(srcLine)
+		srcMeta = PasteLine(srcMeta, paddedMeta, config.X)
+		if y < len(ret) {
+			ret[y] = srcMeta
+		} else {
+			ret = append(ret, srcMeta)
+		}
+	}
 	return
 }
 
-func PasteLine(src, inputData []MetaRune) (ret []MetaRune) {
+func PasteLine(src, inputData []MetaRune, x ...int) (ret []MetaRune) {
 	ret = make([]MetaRune, len(src))
 	copy(ret, src)
 
 	setFunc := func(ret []MetaRune, mr MetaRune, i int) {
 		switch mr.Relation {
-		case RelationNone:
-			ret[i] = mr
-		case RelationPrev:
+		case RelationNone, RelationPrev:
 			ret[i] = mr
 		case RelationNext:
 			ret[i] = MetaRune{Value: mr.Value, Relation: RelationNext}
@@ -100,12 +113,12 @@ func PasteLine(src, inputData []MetaRune) (ret []MetaRune) {
 	}
 
 	for i, mr := range inputData {
+		if 0 < len(x) && i+x[0] < len(src) {
+			i += x[0]
+		}
 		s := ret[i]
 		switch s.Relation {
-		case RelationNone:
-			setFunc(ret, mr, i)
-		case RelationPrev:
-			// ret[i-1] = MetaRune{Value: ' ', Relation: RelationNone}
+		case RelationNone, RelationPrev:
 			setFunc(ret, mr, i)
 		case RelationNext:
 			ret[i+1] = MetaRune{Value: ' ', Relation: RelationNone}
@@ -162,7 +175,7 @@ func ReplateIgnore(inputData, src []MetaRune, ignore string) (ret []MetaRune) {
 	return
 }
 
-func PadSpace(src, inputData string, config PasteConfig) (ret string) {
+func PadSpace(inputData string, strWidth int, config PasteConfig) (ret string) {
 	pad := config.Padding
 	padIsFullWidth := runewidth.StringWidth(pad) == 2
 
@@ -179,7 +192,7 @@ func PadSpace(src, inputData string, config PasteConfig) (ret string) {
 	inputData = leftPad + inputData
 
 	inL := runewidth.StringWidth(inputData)
-	srcL := runewidth.StringWidth(src)
+	srcL := strWidth
 	if inL < srcL {
 		diff := srcL - inL
 		var rightPad string
@@ -196,23 +209,3 @@ func PadSpace(src, inputData string, config PasteConfig) (ret string) {
 	ret = inputData
 	return
 }
-
-// func Paste(editTarget []string, pasteData []string, config PasteConfig) (ret []string) {
-// 	runes := toRunes(editTarget)
-// 	emptyLine := []rune(strings.Repeat(" ", len(runes[0])))
-// 	for y, line := range pasteData {
-// 		y += config.Y
-// 		if len(runes) <= y {
-// 			runes = append(runes, emptyLine)
-// 		}
-// 		for x, c := range line {
-// 			x += config.X
-// 			runes[y][x] = c
-// 		}
-// 	}
-// 	for _, r := range runes {
-// 		s := string(r)
-// 		ret = append(ret, s)
-// 	}
-// 	return
-// }

@@ -3,6 +3,7 @@ package rect
 import (
 	"testing"
 
+	"github.com/google/go-cmp/cmp"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -76,6 +77,15 @@ func TestPasteLine(t *testing.T) {
 	},
 		PasteLine(toMetaRune("12345"), toMetaRune("　aあ")))
 
+	assert.Equal(t, []MetaRune{
+		{Value: '1', Relation: RelationNone},
+		{Value: 'a', Relation: RelationNone},
+		{Value: 'b', Relation: RelationNone},
+		{Value: 'c', Relation: RelationNone},
+		{Value: '5', Relation: RelationNone},
+	},
+		PasteLine(toMetaRune("12345"), toMetaRune("abc"), 1))
+
 }
 
 func TestReplaceIgnore(t *testing.T) {
@@ -97,23 +107,135 @@ func TestReplaceIgnore(t *testing.T) {
 }
 
 func TestPadSpace(t *testing.T) {
-	assert.Equal(t, "abc  ", PadSpace("abcde", "abc", PasteConfig{X: 0, Padding: " "}))
-	assert.Equal(t, " abc ", PadSpace("abcde", "abc", PasteConfig{X: 1, Padding: " "}))
-	assert.Equal(t, "  abc", PadSpace("abcde", "abc", PasteConfig{X: 2, Padding: " "}))
-	assert.Equal(t, "   abc", PadSpace("abcde", "abc", PasteConfig{X: 3, Padding: " "}))
+	assert.Equal(t, "abc  ", PadSpace("abc", 5, PasteConfig{X: 0, Padding: " "}))
+	assert.Equal(t, " abc ", PadSpace("abc", 5, PasteConfig{X: 1, Padding: " "}))
+	assert.Equal(t, "  abc", PadSpace("abc", 5, PasteConfig{X: 2, Padding: " "}))
+	assert.Equal(t, "   abc", PadSpace("abc", 5, PasteConfig{X: 3, Padding: " "}))
 
-	assert.Equal(t, "abc 　", PadSpace("abcdef", "abc", PasteConfig{X: 0, Padding: "　"}))
-	assert.Equal(t, "abc　", PadSpace("abcde", "abc", PasteConfig{X: 0, Padding: "　"}))
-	assert.Equal(t, " abc ", PadSpace("abcde", "abc", PasteConfig{X: 1, Padding: "　"}))
-	assert.Equal(t, "　abc", PadSpace("abcde", "abc", PasteConfig{X: 2, Padding: "　"}))
-	assert.Equal(t, "　 abc", PadSpace("abcde", "abc", PasteConfig{X: 3, Padding: "　"}))
+	assert.Equal(t, "abc 　", PadSpace("abc", 6, PasteConfig{X: 0, Padding: "　"}))
+	assert.Equal(t, "abc　", PadSpace("abc", 5, PasteConfig{X: 0, Padding: "　"}))
+	assert.Equal(t, " abc ", PadSpace("abc", 5, PasteConfig{X: 1, Padding: "　"}))
+	assert.Equal(t, "　abc", PadSpace("abc", 5, PasteConfig{X: 2, Padding: "　"}))
+	assert.Equal(t, "　 abc", PadSpace("abc", 5, PasteConfig{X: 3, Padding: "　"}))
 }
 
-// func TestPaste(t *testing.T) {
-// 	assert.Equal(t, []string{"abc45", "def90", "ghide"}, Paste([]string{"12345", "67890", "abcde"}, []string{"abc", "def", "ghi"}, PasteConfig{Padding: " "}), "Paste 0,0 axis")
-// 	assert.Equal(t, []string{"12345", "6abc0", "adefe", " ghi "}, Paste([]string{"12345", "67890", "abcde"}, []string{"abc", "def", "ghi"}, PasteConfig{X: 1, Y: 1, Padding: " "}), "Paste 1,1 axis")
-// 	assert.Equal(t, []string{"123456", "6abc01", "adefef", " ghi"}, Paste([]string{"123456", "678901", "abcdef"}, []string{"abc", "def", "ghi"}, PasteConfig{X: 1, Y: 1, Padding: "　"}), "Paste with fullwidth space")
-// 	assert.Equal(t, []string{"abc456", "def901", "ghi　　"}, Paste([]string{"123456", "678901"}, []string{"abc", "def", "ghi"}, PasteConfig{Padding: "　"}), "Paste with fullwidth space")
-// 	assert.Equal(t, []string{"あい5", "うえ0"}, Paste([]string{"12345", "67890"}, []string{"あい", "うえ"}, PasteConfig{}), "Paste fullwidth character")
-// 	assert.Equal(t, []string{" あい ", " うえ "}, Paste([]string{"１２３", "４５６"}, []string{"あい", "うえ"}, PasteConfig{X: 1}), "Paste fullwidth character")
-// }
+func TestPaste(t *testing.T) {
+	type TestData struct {
+		expect         [][]MetaRune
+		src, inputData []string
+		config         PasteConfig
+		msg            string
+	}
+	testDatas := []TestData{
+		{
+			expect: [][]MetaRune{
+				{
+					{Value: 'a', Relation: RelationNone},
+					{Value: 'b', Relation: RelationNone},
+					{Value: 'c', Relation: RelationNone},
+					{Value: '4', Relation: RelationNone},
+					{Value: '5', Relation: RelationNone},
+				},
+				{
+					{Value: 'd', Relation: RelationNone},
+					{Value: 'e', Relation: RelationNone},
+					{Value: 'f', Relation: RelationNone},
+					{Value: '9', Relation: RelationNone},
+					{Value: '0', Relation: RelationNone},
+				},
+				{
+					{Value: 'g', Relation: RelationNone},
+					{Value: 'h', Relation: RelationNone},
+					{Value: 'i', Relation: RelationNone},
+					{Value: 'd', Relation: RelationNone},
+					{Value: 'e', Relation: RelationNone},
+				},
+			},
+			src:       []string{"12345", "67890", "abcde"},
+			inputData: []string{"abc", "def", "ghi"},
+			config:    PasteConfig{Padding: " "},
+			msg:       "原点座標からの貼付け（矩形は貼り付け元の行数以内）",
+		},
+		{
+			expect: [][]MetaRune{
+				{
+					{Value: '1', Relation: RelationNone},
+					{Value: '2', Relation: RelationNone},
+					{Value: '3', Relation: RelationNone},
+					{Value: '4', Relation: RelationNone},
+					{Value: '5', Relation: RelationNone},
+				},
+				{
+					{Value: 'a', Relation: RelationNone},
+					{Value: 'b', Relation: RelationNone},
+					{Value: 'c', Relation: RelationNone},
+					{Value: '9', Relation: RelationNone},
+					{Value: '0', Relation: RelationNone},
+				},
+				{
+					{Value: 'd', Relation: RelationNone},
+					{Value: 'e', Relation: RelationNone},
+					{Value: 'f', Relation: RelationNone},
+					{Value: 'd', Relation: RelationNone},
+					{Value: 'e', Relation: RelationNone},
+				},
+				{
+					{Value: 'g', Relation: RelationNone},
+					{Value: 'h', Relation: RelationNone},
+					{Value: 'i', Relation: RelationNone},
+					{Value: ' ', Relation: RelationNone},
+					{Value: ' ', Relation: RelationNone},
+				},
+			},
+			src:       []string{"12345", "67890", "abcde"},
+			inputData: []string{"abc", "def", "ghi"},
+			config:    PasteConfig{Y: 1, Padding: " "},
+			msg:       "原点座標からの貼付け（矩形は貼り付け元の行数超過）",
+		},
+		{
+			expect: [][]MetaRune{
+				{
+					{Value: '1', Relation: RelationNone},
+					{Value: '2', Relation: RelationNone},
+					{Value: '3', Relation: RelationNone},
+					{Value: '4', Relation: RelationNone},
+					{Value: '5', Relation: RelationNone},
+				},
+				{
+					{Value: '6', Relation: RelationNone},
+					{Value: 'a', Relation: RelationNone},
+					{Value: 'b', Relation: RelationNone},
+					{Value: 'c', Relation: RelationNone},
+					{Value: '0', Relation: RelationNone},
+				},
+				{
+					{Value: 'a', Relation: RelationNone},
+					{Value: 'd', Relation: RelationNone},
+					{Value: 'e', Relation: RelationNone},
+					{Value: 'f', Relation: RelationNone},
+					{Value: 'e', Relation: RelationNone},
+				},
+				{
+					{Value: ' ', Relation: RelationNone},
+					{Value: 'g', Relation: RelationNone},
+					{Value: 'h', Relation: RelationNone},
+					{Value: 'i', Relation: RelationNone},
+					{Value: ' ', Relation: RelationNone},
+				},
+			},
+			src:       []string{"12345", "67890", "abcde"},
+			inputData: []string{"abc", "def", "ghi"},
+			config:    PasteConfig{X: 1, Y: 1, Padding: " "},
+			msg:       "原点座標からの貼付け（矩形は貼り付け元の行数超過）",
+		},
+	}
+	for i, v := range testDatas {
+		got := Paste(v.src, v.inputData, v.config)
+		if diff := cmp.Diff(v.expect, got); diff != "" {
+			t.Error("NG", i, "\n"+diff)
+		} else {
+			t.Log("OK", i)
+		}
+	}
+
+}
