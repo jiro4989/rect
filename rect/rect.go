@@ -55,15 +55,16 @@ func PasteLine(src, inputData string, config PasteConfig) string {
 	width := config.X
 	for i := 0; i < len(inputRune); i++ {
 		// 上書き元のテキストの表示幅を超過シていたら追加
-		if runewidth.StringWidth(src) <= width {
-			src += " "
-			srcRune = append(srcRune, ' ')
+		srcWidth := runewidth.StringWidth(src)
+		if srcWidth <= width {
+			pad := strings.Repeat(" ", width-srcWidth+1)
+			src += pad
+			srcRune = append(srcRune, []rune(pad)...)
 		}
 
 		ir := inputRune[i]
 		w := runewidth.RuneWidth(ir)
 
-		// 座標ズレ分を加算
 		// 表示上の位置から処理対象の文字とそのインデックスを取得
 		sr, i2 := lookup(src, width)
 
