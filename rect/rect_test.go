@@ -13,6 +13,8 @@ func TestPasteLine(t *testing.T) {
 	}
 	testdatas := []TestData{
 		{expect: "abc45", src: "12345", inputData: "abc", config: PasteConfig{}},
+		{expect: "1abc5", src: "12345", inputData: "abc", config: PasteConfig{X: 1}},
+		{expect: "123abc", src: "12345", inputData: "abc", config: PasteConfig{X: 3}},
 	}
 	for _, v := range testdatas {
 		got := PasteLine(v.src, v.inputData, v.config)
