@@ -1,6 +1,10 @@
 package rect
 
-import "github.com/mattn/go-runewidth"
+import (
+	"strings"
+
+	"github.com/mattn/go-runewidth"
+)
 
 type PasteConfig struct {
 	X                int
@@ -28,6 +32,18 @@ func lookup(s string, n int) (ret rune, index int) {
 }
 
 func Paste(src, inputData []string, config PasteConfig) (ret []string) {
+	ret = make([]string, len(src))
+	copy(ret, src)
+
+	for i, v := range inputData {
+		y := i + config.Y
+		if len(ret) <= y {
+			w := runewidth.StringWidth(src[0])
+			s := strings.Repeat(" ", w)
+			ret = append(ret, s)
+		}
+		ret[y] = PasteLine(ret[y], v, config)
+	}
 	return
 }
 
@@ -59,10 +75,8 @@ func PasteLine(src, inputData string, config PasteConfig) string {
 			// 置き換えた文字の直前に半角スペースを追加する
 			// _, i3 := lookup(src, width-1)
 			// if i2 == i3 {
-			// 	a := srcRune[:i2-1]
-			// 	b := srcRune[i2-1:]
-			// 	srcRune = append(a, ' ')
-			// 	srcRune = append(srcRune, b...)
+			// 	v := append([]rune{' '}, srcRune[i2-1:]...)
+			// 	srcRune = append(srcRune[:i2-1], v...)
 			// }
 			width += w
 			continue

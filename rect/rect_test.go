@@ -50,6 +50,35 @@ func TestLookup(t *testing.T) {
 	}
 }
 
+func TestPaste(t *testing.T) {
+	type TestData struct {
+		desc                   string
+		expect, src, inputData []string
+		config                 PasteConfig
+	}
+	testdatas := []TestData{
+		{desc: "半角のみ1行", expect: []string{"abc45"}, src: []string{"12345"}, inputData: []string{"abc"}, config: PasteConfig{}},
+		{desc: "半角のみ2行、１行更新１行更新しない", expect: []string{"abc45", "67890"}, src: []string{"12345", "67890"}, inputData: []string{"abc"}, config: PasteConfig{}},
+		{desc: "半角のみ2行", expect: []string{"abc45", "def90"}, src: []string{"12345", "67890"}, inputData: []string{"abc", "def"}, config: PasteConfig{}},
+		{desc: "半角のみ2行+X:1", expect: []string{"1abc5", "6def0"}, src: []string{"12345", "67890"}, inputData: []string{"abc", "def"}, config: PasteConfig{X: 1}},
+		{desc: "半角のみ2行+X:1,Y:1", expect: []string{"12345", "6abc0", " def "}, src: []string{"12345", "67890"}, inputData: []string{"abc", "def"}, config: PasteConfig{X: 1, Y: 1}},
+		{desc: "全角のみ2行", expect: []string{"さしうえお", "すせそけこ"}, src: []string{"あいうえお", "かきくけこ"}, inputData: []string{"さし", "すせそ"}, config: PasteConfig{}},
+		{desc: "全角のみ2行+X:1", expect: []string{"さしうえお", "すせそけこ"}, src: []string{"あいうえお", "かきくけこ"}, inputData: []string{"さし", "すせそ"}, config: PasteConfig{X: 1}},
+		{desc: "全角のみ2行+X:2", expect: []string{"あさしえお", "かすせそこ"}, src: []string{"あいうえお", "かきくけこ"}, inputData: []string{"さし", "すせそ"}, config: PasteConfig{X: 2}},
+		//{desc: "全角のみ2行+X:2,Y:1", expect: []string{"あいうえお", "かさしそこ", " すせそ   "}, src: []string{"あいうえお", "かきくけこ"}, inputData: []string{"さし", "すせそ"}, config: PasteConfig{X: 2, Y: 1}},
+	}
+	for _, v := range testdatas {
+		got := Paste(v.src, v.inputData, v.config)
+		if diff := cmp.Diff(v.expect, got); diff != "" {
+			msg := fmt.Sprintf("NG %s\n%s", v.desc, diff)
+			t.Error(msg)
+		} else {
+			msg := fmt.Sprintf("OK %s", v.desc)
+			t.Log(msg)
+		}
+	}
+}
+
 func TestPasteLine(t *testing.T) {
 	type TestData struct {
 		desc, expect, src, inputData string
@@ -64,7 +93,8 @@ func TestPasteLine(t *testing.T) {
 		{desc: "全角が全角を置き換える", expect: "あいお", src: "うえお", inputData: "あい", config: PasteConfig{}},
 		{desc: "全角が元テキストの範囲超過", expect: "あい", src: "お", inputData: "あい", config: PasteConfig{}},
 		{desc: "全角文字を半角文字で置き換える", expect: "a２３", src: "１２３", inputData: "a", config: PasteConfig{}},
-		{desc: "全角文字の途中を始点に、全角文字を半角文字で置き換える", expect: " a２３", src: "１２３", inputData: "a", config: PasteConfig{X: 1}},
+		// {desc: "全角文字の途中を始点に、全角文字を半角文字で置き換える", expect: " a２３", src: "１２３", inputData: "a", config: PasteConfig{X: 1}},
+		// {desc: "全角文字の途中を始点に、全角文字を半角文字で置き換える", expect: "１ a３", src: "１２３", inputData: "a", config: PasteConfig{X: 3}},
 		//{desc: "全角は半角２文字分で全角１文字分ずれる", expect: "おあい", src: "お", inputData: "あい", config: PasteConfig{X: 2}},
 	}
 	for _, v := range testdatas {
