@@ -51,6 +51,31 @@ func TestLookup(t *testing.T) {
 	}
 }
 
+func TestMaxWidth(t *testing.T) {
+	type TestData struct {
+		desc   string
+		expect int
+		s      []string
+	}
+	testdatas := []TestData{
+		{desc: "半角のみ", expect: 3, s: []string{"123"}},
+		{desc: "半角のみ", expect: 4, s: []string{"123", "1234"}},
+		{desc: "全角のみ", expect: 6, s: []string{"１２３"}},
+		{desc: "半角全角", expect: 5, s: []string{"1２３", "abc"}},
+		{desc: "空文字", expect: 0, s: []string{"", ""}},
+	}
+	for _, v := range testdatas {
+		got := maxWidth(v.s)
+		if diff := cmp.Diff(v.expect, got); diff != "" {
+			msg := fmt.Sprintf("NG %s\n%s", v.desc, diff)
+			t.Error(msg)
+		} else {
+			msg := fmt.Sprintf("OK %s", v.desc)
+			t.Log(msg)
+		}
+	}
+}
+
 func TestPaste(t *testing.T) {
 	type TestData struct {
 		desc                   string

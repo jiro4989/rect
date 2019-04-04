@@ -31,15 +31,25 @@ func lookup(s string, n int) (ret rune, index int) {
 	return
 }
 
+func maxWidth(s []string) (ret int) {
+	for _, v := range s {
+		w := runewidth.StringWidth(v)
+		if ret < w {
+			ret = w
+		}
+	}
+	return
+}
+
 func Paste(src, inputData []string, config PasteConfig) (ret []string) {
 	ret = make([]string, len(src))
 	copy(ret, src)
+	max := maxWidth(src)
 
 	for i, v := range inputData {
 		y := i + config.Y
 		if len(ret) <= y {
-			w := runewidth.StringWidth(src[0])
-			s := strings.Repeat(" ", w)
+			s := strings.Repeat(" ", max)
 			ret = append(ret, s)
 		}
 		ret[y] = PasteLine(ret[y], v, config)
