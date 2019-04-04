@@ -98,7 +98,7 @@ func TestPasteLine(t *testing.T) {
 		{desc: "全角半角混在かつ最後の文字を置き換える(最後は半角)", expect: "aあ1", src: "abcd", inputData: "あ1", config: PasteConfig{X: 1}},
 		{desc: "全角半角混在かつ最後の文字を置き換える(最後は全角)", expect: "a1あ", src: "abcd", inputData: "1あ", config: PasteConfig{X: 1}},
 		{desc: "全角半角混在かつ最後の文字を超過する(最後は半角)", expect: "abあ1", src: "abcd", inputData: "あ1", config: PasteConfig{X: 2}},
-		{desc: "全角半角混在かつ最後の文字を超過する(最後は全角)", expect: "ab1あ", src: "abcd", inputData: "あ1", config: PasteConfig{X: 2}},
+		{desc: "全角半角混在かつ最後の文字を超過する(最後は全角)", expect: "ab1あ", src: "abcd", inputData: "1あ", config: PasteConfig{X: 2}},
 		// {desc: "全角文字の途中を始点に、全角文字を半角文字で置き換える", expect: " a２３", src: "１２３", inputData: "a", config: PasteConfig{X: 1}},
 		// {desc: "全角文字の途中を始点に、全角文字を半角文字で置き換える", expect: "１ a３", src: "１２３", inputData: "a", config: PasteConfig{X: 3}},
 		//{desc: "全角は半角２文字分で全角１文字分ずれる", expect: "おあい", src: "お", inputData: "あい", config: PasteConfig{X: 2}},

@@ -68,6 +68,16 @@ func PasteLine(src, inputData string, config PasteConfig) string {
 		// 表示上の位置から処理対象の文字とそのインデックスを取得
 		sr, i2 := lookup(src, width)
 
+		if len(srcRune) <= i2 {
+			n := 1
+			if runewidth.RuneWidth(sr) == 2 {
+				n = 2
+			}
+			pad := strings.Repeat(" ", n)
+			src += pad
+			srcRune = append(srcRune, []rune(pad)...)
+		}
+
 		isFullWidth := runewidth.RuneWidth(sr) == 2
 		if isFullWidth {
 			// 変更対象が全角かつ、上書きに使う値が全角のときはそのまま置き換える
