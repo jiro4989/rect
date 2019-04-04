@@ -39,18 +39,18 @@ func PasteLine(src, inputData string, config PasteConfig) string {
 	var width int
 	for i := 0; i < len(inputRune); i++ {
 		ir := inputRune[i]
-		// 座標ズレ分を加算
-		// 直接i2を加算するとループ回数が変わってしまうため一時変数を使用
-		w := runewidth.RuneWidth(ir)
 
-		// 表示上の位置から処理対象の文字とそのインデックスを取得
-		sr, i2 := lookup(src, width)
-		i2 += config.X
-
-		// 上書き元のテキストの範囲超過していたら空文字を追加
-		if len(srcRune) <= i2 {
+		// 上書き元のテキストの表示幅を超過シていたら追加
+		if runewidth.StringWidth(src) <= width {
+			src += " "
 			srcRune = append(srcRune, ' ')
 		}
+
+		// 座標ズレ分を加算
+		// 表示上の位置から処理対象の文字とそのインデックスを取得
+		sr, i2 := lookup(src, width+config.X)
+
+		w := runewidth.RuneWidth(ir)
 		isFullWidth := runewidth.RuneWidth(sr) == 2
 		if isFullWidth {
 			// 変更対象が全角かつ、上書きに使う値が全角のときはそのまま置き換える
