@@ -10,28 +10,39 @@ suite "toClassifiedString":
     check "あい".toClassifiedString == @[ClassifiedString(data: "あ", indices: @[0, 1]), ClassifiedString(data: "い", indices: @[2, 3])]
     check "1い2う".toClassifiedString == @[ClassifiedString(data: "1", indices: @[0]), ClassifiedString(data: "い", indices: @[1, 2]), ClassifiedString(data: "2", indices: @[3]), ClassifiedString(data: "う", indices: @[4, 5])]
 
+# suite "pad":
+#   test "Half width":
+#     check pad("a", "bbbbb") == ["a    ", "bbbbb"]
+#     check pad(" a", "bbbbb") == [" a   ", "bbbbb"]
+#     check pad("bbbbb", "a") == ["bbbbb", "a    "]
+#     check pad("bbbbb", " a") == ["bbbbb", " a   "]
+#   test "Half width, set position":
+#     check pad("a", "bbb", x = 1) == ["a   ", " bbb"]
+#     check pad(" a", "bbb", x = 1) == [" a  ", " bbb"]
+#     check pad("bbb", "a", x = 1) == ["bbb", " a "]
+#     check pad("bbb", "a", x = 2) == ["bbb", "  a"]
+#     check pad("bbb", "a", x = 3) == ["bbb ", "   a"]
+#   test "Full width":
+#     check pad("あ", "bbbbb") == ["あ   ", "bbbbb"]
+#     check pad(" あ", "bbbbb") == [" あ  ", "bbbbb"]
+#     check pad("bbbbb", "あ") == ["bbbbb", "あ   "]
+#     check pad("bbbbb", " あ") == ["bbbbb", " あ  "]
+#   test "Full width, set position":
+#     check pad("あ", "bbb", x = 1) == ["あ  ", " bbb"]
+#     check pad(" あ", "bbb", x = 1) == [" あ ", " bbb"]
+#     check pad("bbb", "あ", x = 1) == ["bbb", " あ"]
+#     check pad("bbb", "あ", x = 2) == ["bbb ", "  あ"]
+#     check pad("bbb", "あ", x = 3) == ["bbb  ", "   あ"]
+#     check pad("123", "あ") == ["123", "あ "]
+
 suite "pad":
   test "Half width":
-    var
-      a = "a"
-      b = "bbbbb"
-    pad(a, b)
-    check a == "a    "
-    check b == "bbbbb"
-  test "Half width, set pos":
-    var
-      a = "a"
-      b = "bbbbb"
-    pad(a, b, 2)
-    check a == "a      "
-    check b == "  bbbbb"
-  test "Full width, set pos":
-    var
-      a = "a"
-      b = "あいう"
-    pad(a, b, 1)
-    check a == "a      "
-    check b == " あいう"
+    check pad("bbbbb", "a") == ["bbbbb", "a"]
+    check pad("bbbbb", " a") == ["bbbbb", " a"]
+    check pad("bbbbb", "a", 1) == ["bbbbb", " a"]
+    check pad("a", "a", 1) == ["a", " a"]
+    check pad("あ", "a", 1) == ["あ", " a"]
+    check pad("あ", "a", 2) == ["あ", "  a"]
 
 suite "continuedInts":
   test "normal":
@@ -61,16 +72,18 @@ suite "paste":
   test "normal":
     discard
 
-# suite "pasteLine":
-#   test "Half width":
-#     check "".pasteLine("abcde") == "abcde"
-#     check "123".pasteLine("abcde") == "abcde"
-#   test "Half width, set X pos":
-#     check "".pasteLine("abcde", x = 1) == " abcde"
-#     check "123".pasteLine("abcde", x = 1) == "1abcde"
-#     check "123".pasteLine("abcde", x = 3) == "123abcde"
-#     check "123".pasteLine("abcde", x = 4) == "123 abcde"
-#     check "".pasteLine("abcde", x = 4) == "    abcde"
-#   test "Full width":
-#     check "".pasteLine("あいうえお") == "あいうえお"
-#     check "123".pasteLine("あい") == "あ3"
+suite "pasteLine":
+  test "Half width":
+    check "".pasteLine("abcde") == "abcde"
+    check "123".pasteLine("abcde") == "abcde"
+    check "123".pasteLine("a") == "a23"
+  test "Half width, set X pos":
+    check "".pasteLine("abcde", x = 1) == " abcde"
+    check "123".pasteLine("abcde", x = 1) == "1abcde"
+    check "123".pasteLine("abcde", x = 3) == "123abcde"
+    check "123".pasteLine("abcde", x = 4) == "123 abcde"
+    check "".pasteLine("abcde", x = 4) == "    abcde"
+  test "Full width":
+    check "".pasteLine("あいうえお") == "あいうえお"
+    check "123".pasteLine("あ") == "あ3"
+    check "abc".pasteLine("あ", x = 1) == "aあ"
