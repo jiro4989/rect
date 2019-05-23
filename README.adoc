@@ -20,3 +20,25 @@ rect paste -X 4 -Y 4 --insert input_data.txt edit_target.txt
 echo -e 'あいうえお\nかきくけこ\nさしすせそ' | rect paste -X 1 -Y 1 --insert input_data.txt 
 ----
 
+== 挙動について
+
+=== 1
+
+あいう
+  1234
+
+あ1234
+
+=== 2
+
+あいう
+ 1234
+
+ 1234
+
+=== 3
+
+あいう
+ えお
+
+ えお
