@@ -30,11 +30,7 @@ before_script:
 
 script:
   - set -e
-  - nim -v
-  - nimble -v
-  - nimble test
-  - nimble docs
-  - nimble build
+  - nimble ci
   - set +e
 
 before_deploy:
