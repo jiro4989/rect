@@ -10,37 +10,13 @@ suite "toClassifiedString":
     check "あい".toClassifiedString == @[ClassifiedString(data: "あ", indices: @[0, 1]), ClassifiedString(data: "い", indices: @[2, 3])]
     check "1い2う".toClassifiedString == @[ClassifiedString(data: "1", indices: @[0]), ClassifiedString(data: "い", indices: @[1, 2]), ClassifiedString(data: "2", indices: @[3]), ClassifiedString(data: "う", indices: @[4, 5])]
 
-# suite "pad":
-#   test "Half width":
-#     check pad("a", "bbbbb") == ["a    ", "bbbbb"]
-#     check pad(" a", "bbbbb") == [" a   ", "bbbbb"]
-#     check pad("bbbbb", "a") == ["bbbbb", "a    "]
-#     check pad("bbbbb", " a") == ["bbbbb", " a   "]
-#   test "Half width, set position":
-#     check pad("a", "bbb", x = 1) == ["a   ", " bbb"]
-#     check pad(" a", "bbb", x = 1) == [" a  ", " bbb"]
-#     check pad("bbb", "a", x = 1) == ["bbb", " a "]
-#     check pad("bbb", "a", x = 2) == ["bbb", "  a"]
-#     check pad("bbb", "a", x = 3) == ["bbb ", "   a"]
-#   test "Full width":
-#     check pad("あ", "bbbbb") == ["あ   ", "bbbbb"]
-#     check pad(" あ", "bbbbb") == [" あ  ", "bbbbb"]
-#     check pad("bbbbb", "あ") == ["bbbbb", "あ   "]
-#     check pad("bbbbb", " あ") == ["bbbbb", " あ  "]
-#   test "Full width, set position":
-#     check pad("あ", "bbb", x = 1) == ["あ  ", " bbb"]
-#     check pad(" あ", "bbb", x = 1) == [" あ ", " bbb"]
-#     check pad("bbb", "あ", x = 1) == ["bbb", " あ"]
-#     check pad("bbb", "あ", x = 2) == ["bbb ", "  あ"]
-#     check pad("bbb", "あ", x = 3) == ["bbb  ", "   あ"]
-#     check pad("123", "あ") == ["123", "あ "]
-
 suite "pad":
   test "Half width":
     check pad("bbbbb", "a") == ["bbbbb", "a"]
     check pad("bbbbb", " a") == ["bbbbb", " a"]
     check pad("bbbbb", "a", 1) == ["bbbbb", " a"]
     check pad("a", "a", 1) == ["a", " a"]
+  test "Full width":
     check pad("あ", "a", 1) == ["あ", " a"]
     check pad("あ", "a", 2) == ["あ", "  a"]
 
@@ -68,6 +44,23 @@ suite "split3":
   test "left center":
     check data2.split3(2, 6) == [@[ClassifiedString(indices: @[0, 1])], @[ClassifiedString(indices: @[2, 3]), ClassifiedString(indices: @[4, 5]), ClassifiedString(indices: @[6, 7])], @[]]
 
+suite "first":
+  test "1 element":
+    check [ClassifiedString(indices: @[1, 2])].first == 1
+  test "2 element":
+    check [ClassifiedString(indices: @[1, 2]), ClassifiedString(indices: @[3, 4])].first == 1
+  test "0 element":
+    check [].first == 0
+
+suite "last":
+  test "1 element":
+    check [ClassifiedString(indices: @[1, 2])].last == 2
+  test "2 element":
+    check [ClassifiedString(indices: @[1, 2]), ClassifiedString(indices: @[3, 4])].last == 4
+    check [ClassifiedString(indices: @[1, 2]), ClassifiedString(indices: @[3])].last == 3
+  test "0 element":
+    check [].last == 0
+
 suite "paste":
   test "normal":
     discard
@@ -87,3 +80,10 @@ suite "pasteLine":
     check "".pasteLine("あいうえお") == "あいうえお"
     check "123".pasteLine("あ") == "あ3"
     check "abc".pasteLine("あ", x = 1) == "aあ"
+    check "abc".pasteLine("あ", x = 2) == "abあ"
+    check "abc".pasteLine("あ", x = 3) == "abcあ"
+    check "abc".pasteLine("あ", x = 4) == "abc あ"
+  test "Full width half":
+    check "あいう".pasteLine("あ", x = 1) == " あ う"
+    check "あいう".pasteLine("あ", x = 2) == "ああう"
+    check "あいう".pasteLine("あ", x = 3) == "あ あ "
