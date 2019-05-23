@@ -21,6 +21,7 @@ task docs, "Generate documents":
 task ci, "Run CI":
   exec "nim -v"
   exec "nimble -v"
+  exec "nimble install -Y"
   exec "nimble test -Y"
   exec "nimble docs -Y"
   exec "nimble build -Y"
