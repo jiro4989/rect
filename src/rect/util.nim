@@ -58,9 +58,6 @@ proc last(self: openArray[ClassifiedString]): int =
   let li = self[self.len-1].indices
   result = li[li.len-1]
 
-proc paste*(dst, src: seq[string], x, y: int): seq[string] =
-  discard
-
 proc pasteLine*(dst, src: string, x = 0): string =
   var
     dst2 = dst
@@ -88,3 +85,13 @@ proc pasteLine*(dst, src: string, x = 0): string =
     result.add " "
   result.add right.mapIt(it.data).join
   
+proc paste*(dst, src: seq[string], x = 0, y = 0): seq[string] =
+  result = dst
+  if src.len < 1: return
+  for i, line in src:
+    let n = i + y
+    if result.len <= n:
+      let diff = n + 1 - result.len
+      for _ in 1..diff:
+        result.add ""
+    result[n] = result[n].pasteLine(line, x = x)
