@@ -18,16 +18,19 @@ proc pasteLine*(dst, src: string, x = 0): string =
   src2 = ds2[1]
   if dst2.stringWidth < src2.stringWidth:
     let diff = src2.stringWidth - dst2.stringWidth
+    # Classifiedで位置をセットするためにパディング
     dst2 = dst2 & " ".repeat(diff).join
   let
     dst3 = dst2.toClassifiedString
     src3 = src2.toClassifiedString[x..^1]
     minIndex    = x
     maxIndex    = src3.last
+    # 3分割
     s3     = dst3.split3(minIndex, maxIndex)
     left   = s3[0]
-    center = s3[1]
+    center = s3[1] # centerの箇所をsrc3に置き換える
     right  = s3[2]
+
   result.add left.mapIt(it.data).join
   if src3.first != center.first:
     result.add " "

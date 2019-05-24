@@ -1272,13 +1272,22 @@ function main() {
 <a id="pasteLine,string,string,int"></a>
 <dt><pre><span class="Keyword">proc</span> <span class="Identifier">pasteLine</span><span class="Other">(</span><span class="Identifier">dst</span><span class="Other">,</span> <span class="Identifier">src</span><span class="Other">:</span> <span class="Identifier">string</span><span class="Other">;</span> <span class="Identifier">x</span> <span class="Other">=</span> <span class="DecNumber">0</span><span class="Other">)</span><span class="Other">:</span> <span class="Identifier">string</span> <span><span class="Other">{</span><span class="Other pragmadots">...</span><span class="Other">}</span></span><span class="pragmawrap"><span class="Other">{.</span><span class="pragma"><span class="Identifier">raises</span><span class="Other">:</span> <span class="Other">[</span><span class="Other">]</span><span class="Other">,</span> <span class="Identifier">tags</span><span class="Other">:</span> <span class="Other">[</span><span class="Other">]</span></span><span class="Other">.}</span></span></pre></dt>
 <dd>
-
+dstにsrcを貼り付ける。全角文字幅を考慮する。
+<p><strong class="examples_text">Examples:</strong></p>
+<pre class="listing"><span class="Identifier">doAssert</span> <span class="StringLit">&quot;123&quot;</span><span class="Other">.</span><span class="Identifier">pasteLine</span><span class="Other">(</span><span class="StringLit">&quot;a&quot;</span><span class="Other">)</span> <span class="Operator">==</span> <span class="StringLit">&quot;a23&quot;</span>
+<span class="Identifier">doAssert</span> <span class="StringLit">&quot;abc&quot;</span><span class="Other">.</span><span class="Identifier">pasteLine</span><span class="Other">(</span><span class="StringLit">&quot;あ&quot;</span><span class="Other">,</span> <span class="Identifier">x</span> <span class="Other">=</span> <span class="DecNumber">1</span><span class="Other">)</span> <span class="Operator">==</span> <span class="StringLit">&quot;aあ&quot;</span>
+<span class="Identifier">doAssert</span> <span class="StringLit">&quot;あいう&quot;</span><span class="Other">.</span><span class="Identifier">pasteLine</span><span class="Other">(</span><span class="StringLit">&quot;あ1&quot;</span><span class="Other">,</span> <span class="Identifier">x</span> <span class="Other">=</span> <span class="DecNumber">3</span><span class="Other">)</span> <span class="Operator">==</span> <span class="StringLit">&quot;あ あ1&quot;</span></pre>
 
 </dd>
 <a id="paste,seq[string],seq[string],int,int"></a>
 <dt><pre><span class="Keyword">proc</span> <span class="Identifier">paste</span><span class="Other">(</span><span class="Identifier">dst</span><span class="Other">,</span> <span class="Identifier">src</span><span class="Other">:</span> <span class="Identifier">seq</span><span class="Other">[</span><span class="Identifier">string</span><span class="Other">]</span><span class="Other">;</span> <span class="Identifier">x</span> <span class="Other">=</span> <span class="DecNumber">0</span><span class="Other">;</span> <span class="Identifier">y</span> <span class="Other">=</span> <span class="DecNumber">0</span><span class="Other">)</span><span class="Other">:</span> <span class="Identifier">seq</span><span class="Other">[</span><span class="Identifier">string</span><span class="Other">]</span> <span><span class="Other">{</span><span class="Other pragmadots">...</span><span class="Other">}</span></span><span class="pragmawrap"><span class="Other">{.</span><span class="pragma"><span class="Identifier">raises</span><span class="Other">:</span> <span class="Other">[</span><span class="Other">]</span><span class="Other">,</span> <span class="Identifier">tags</span><span class="Other">:</span> <span class="Other">[</span><span class="Other">]</span></span><span class="Other">.}</span></span></pre></dt>
 <dd>
-
+dstにsrcを貼り付ける。全角文字幅を考慮する。 dstの幅を超過しようとした場合は行や文字を追加する。
+<p><strong class="examples_text">Examples:</strong></p>
+<pre class="listing"><span class="Keyword">let</span> <span class="Identifier">data</span> <span class="Other">=</span> <span class="Operator">@</span><span class="Other">[</span><span class="StringLit">&quot;12345&quot;</span><span class="Other">,</span> <span class="StringLit">&quot;あいうえお&quot;</span><span class="Other">,</span> <span class="StringLit">&quot;678&quot;</span><span class="Other">]</span>
+<span class="Identifier">doAssert</span> <span class="Identifier">data</span><span class="Other">.</span><span class="Identifier">paste</span><span class="Other">(</span><span class="Operator">@</span><span class="Other">[</span><span class="StringLit">&quot;abc&quot;</span><span class="Other">]</span><span class="Other">)</span> <span class="Operator">==</span> <span class="Operator">@</span><span class="Other">[</span><span class="StringLit">&quot;abc45&quot;</span><span class="Other">,</span> <span class="StringLit">&quot;あいうえお&quot;</span><span class="Other">,</span> <span class="StringLit">&quot;678&quot;</span><span class="Other">]</span>
+<span class="Identifier">doAssert</span> <span class="Identifier">data</span><span class="Other">.</span><span class="Identifier">paste</span><span class="Other">(</span><span class="Operator">@</span><span class="Other">[</span><span class="StringLit">&quot;abc&quot;</span><span class="Other">,</span> <span class="StringLit">&quot;def&quot;</span><span class="Other">]</span><span class="Other">,</span> <span class="Identifier">y</span> <span class="Other">=</span> <span class="DecNumber">2</span><span class="Other">)</span> <span class="Operator">==</span>
+    <span class="Operator">@</span><span class="Other">[</span><span class="StringLit">&quot;12345&quot;</span><span class="Other">,</span> <span class="StringLit">&quot;あいうえお&quot;</span><span class="Other">,</span> <span class="StringLit">&quot;abc&quot;</span><span class="Other">,</span> <span class="StringLit">&quot;def&quot;</span><span class="Other">]</span></pre>
 
 </dd>
 
@@ -1291,7 +1300,7 @@ function main() {
       <div class="twelve-columns footer">
         <span class="nim-sprite"></span>
         <br/>
-        <small>Made with Nim. Generated: 2019-05-24 05:07:26 UTC</small>
+        <small>Made with Nim. Generated: 2019-05-24 08:10:24 UTC</small>
       </div>
     </div>
   </div>
