@@ -2,7 +2,7 @@
 
 version       = "1.0.0"
 author        = "jiro4989"
-description   = "rect is a command to paste text rectangle."
+description   = "rect is a command to crop/paste rectangle text."
 license       = "MIT"
 srcDir        = "src"
 binDir        = "bin"
