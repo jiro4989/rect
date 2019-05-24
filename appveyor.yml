@@ -24,8 +24,6 @@ install:
   - IF not exist "%NIM_ARCHIVE%" appveyor DownloadFile "%NIM_URL%" -FileName "%NIM_ARCHIVE%"
   - 7z x -y "%NIM_ARCHIVE%" -o"%CD%\DIST"> nul
   - SET PATH=%CD%\DIST\%NIM_DIR%\BIN;%CD%\DIST\%MINGW_DIR%\BIN;%CD%\BIN;%PATH%
-  - nim -v
-  - nimble -v
 
 build: off
 
