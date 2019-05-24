@@ -36,7 +36,7 @@ build_script:
   - 7z a %APP_NAME%_windows.zip %APP_NAME%_windows
 
 artifacts:
-  - path: %APP_NAME%_windows.zip
+  - path: /.*_windows\.zip/
     name: zip
 
 deploy:
