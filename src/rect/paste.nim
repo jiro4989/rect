@@ -4,6 +4,12 @@ from sequtils import repeat, filterIt, mapIt
 from strutils import join
 
 proc pasteLine*(dst, src: string, x = 0): string =
+  ## dstにsrcを貼り付ける。全角文字幅を考慮する。
+  runnableExamples:
+    doAssert "123".pasteLine("a") == "a23"
+    doAssert "abc".pasteLine("あ", x = 1) == "aあ"
+    doAssert "あいう".pasteLine("あ1", x = 3) == "あ あ1"
+
   var
     dst2 = dst
     src2 = src
@@ -31,6 +37,13 @@ proc pasteLine*(dst, src: string, x = 0): string =
   result.add right.mapIt(it.data).join
   
 proc paste*(dst, src: seq[string], x = 0, y = 0): seq[string] =
+  ## dstにsrcを貼り付ける。全角文字幅を考慮する。
+  ## dstの幅を超過しようとした場合は行や文字を追加する。
+  runnableExamples:
+    let data = @["12345", "あいうえお", "678"]
+    doAssert data.paste(@["abc"]) == @["abc45", "あいうえお", "678"]
+    doAssert data.paste(@["abc", "def"], y = 2) == @["12345", "あいうえお", "abc", "def"]
+
   result = dst
   if src.len < 1: return
   for i, line in src:
