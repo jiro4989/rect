@@ -72,7 +72,24 @@ Download binary from https://github.com/jiro4989/rect/releases[Releases].
 
 [source]
 ----
-TODO
+rect is a command to crop/paste rectangle text
+
+Usage:
+  rect crop  [options]
+  rect crop  [options] <srcfile>
+  rect paste [options] <dstfile>
+  rect paste [options] <srcfile> <dstfile>
+  rect (-h | --help)
+  rect (-v | --version)
+
+Options:
+  -h --help               Show this screen
+  -v --version            Show version
+  -X --debug              Debug mode ON
+  -x <x>                  Cropping/pasting position X [default: 0]
+  -y <y>                  Cropping/pasting position Y [default: 0]
+  -W --width <width>      Cropping width              [default: 1]
+  -H --height <height>    Cropping height             [default: 1]
 ----
 
 == License

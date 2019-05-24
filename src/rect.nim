@@ -13,10 +13,10 @@ Options:
   -h --help               Show this screen
   -v --version            Show version
   -X --debug              Debug mode ON
-  -x <x>                  Position to paste [default: 0]
-  -y <y>                  Position to paste [default: 0]
-  -W --width <width>      Position to paste [default: 1]
-  -H --height <height>    Position to paste [default: 1]
+  -x <x>                  Cropping/pasting position X [default: 0]
+  -y <y>                  Cropping/pasting position Y [default: 0]
+  -W --width <width>      Cropping width              [default: 1]
+  -H --height <height>    Cropping height             [default: 1]
 """
 
 import docopt
