@@ -65,3 +65,5 @@ suite "crop":
     check data.crop(width = -1) == empty
     check data.crop(height = 0) == empty
     check data.crop(height = -1) == empty
+    check data.crop(x = -1, width = 2) == @["1"]
+    check data.crop(y = -1, height = 2) == @["1"]
