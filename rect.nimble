@@ -15,9 +15,12 @@ requires "nim >= 0.19.4"
 requires "eastasianwidth >= 0.1.0"
 requires "docopt >= 0.6.8"
 
+import strformat
+
 task docs, "Generate documents":
   exec "nimble doc src/rect.nim -o:docs/rect.html"
-  exec "nimble doc src/rect/util.nim -o:docs/util.html"
+  for m in ["classifiedstring", "crop", "paste", "util"]:
+    exec &"nimble doc src/rect/{m}.nim -o:docs/{m}.html"
 
 task ci, "Run CI":
   exec "nim -v"
