@@ -28,6 +28,15 @@ suite "cropLine":
     check "あいうえお".cropLine(x = 1, width = 4) == " い "
     check "あいうえお".cropLine(x = 1, width = 5) == " いう"
     check "あiうえお".cropLine(width = 3) == "あi"
+  test "Illegal parameter":
+    check "abcde".cropLine(x = -1) == ""
+    check "abcde".cropLine(x = -1, width = 2) == "a"
+    check "abcde".cropLine(x = -2, width = 2) == ""
+    check "abcde".cropLine(x = -2, width = 3) == "a"
+    check "abcde".cropLine(x = -2, width = 4) == "ab"
+    check "abcde".cropLine(x = 1, width = 0) == ""
+    check "abcde".cropLine(x = 1, width = -1) == ""
+
 
 suite "crop":
   const data = @["12345", "あいうえお", "678"]
@@ -44,8 +53,15 @@ suite "crop":
     check data.crop(y = 1, width = 4) == @["あい"]
     check data.crop(y = 1, width = 4, height = 2) == @["あい", "678"]
     check data.crop(y = 1, width = 3, height = 2) == @["あ ", "678"]
+  var empty: seq[string]
   test "Range over":
     check data.crop(y = 2, width = 4) == @["678"]
-    var empty: seq[string]
     check data.crop(y = 3, width = 4) == empty
     check data.crop(y = 255, width = 4) == empty
+  test "Illegal parameter":
+    check data.crop(x = -1) == empty
+    check data.crop(y = -1) == empty
+    check data.crop(width = 0) == empty
+    check data.crop(width = -1) == empty
+    check data.crop(height = 0) == empty
+    check data.crop(height = -1) == empty
