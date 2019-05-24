@@ -24,4 +24,6 @@ task ci, "Run CI":
   exec "nimble install -Y"
   exec "nimble test -Y"
   exec "nimble docs -Y"
-  exec "nimble build -Y"
+  exec "nimble build -d:release -Y"
+  exec "./bin/rect -h"
+  exec "./bin/rect -v"

@@ -14,6 +14,7 @@ Options:
 """
 
 import rect/util
+
 import parseopt
 from strutils import parseInt
 from strformat import `&`
@@ -26,7 +27,10 @@ var
 
 proc logDebug(msg: string) =
   if useDebug:
-    stderr.writeLine msg
+    stderr.writeLine "[DEBUG] " & msg
+
+proc logErr(msg: string) =
+  stderr.writeLine "[ERR] " & msg
 
 proc readLines(f: File): seq[string] =
   var line: string
@@ -56,7 +60,7 @@ when isMainModule:
         of "x": x = val.parseInt
         of "y": y = val.parseInt
     of cmdEnd: assert(false)  # cannot happen
-  logDebug &"[DEBUG] command line parameters: x:{x}, y:{y}, files:{files}, debug:{useDebug}"
+  logDebug &"command line parameters: x:{x}, y:{y}, files:{files}, debug:{useDebug}"
 
   var
     srcfile, dstfile: File
@@ -64,32 +68,36 @@ when isMainModule:
   try:
     case files.len
     of 2:
-      logDebug &"[DEBUG] files.len:2"
+      logDebug &"files.len:2"
       srcfile = open(files[0])
       dstfile = open(files[1])
     of 1:
-      logDebug &"[DEBUG] files.len:1, use stdin"
+      logDebug &"files.len:1, use stdin"
       srcfile = stdin
       dstfile = open(files[0])
     else:
-      stderr.writeLine "[ERR] a count of files must be 1 or 2"
+      logErr "a count of files must be 1 or 2"
       stderr.writeLine doc
       quit 1
 
     src = srcfile.readLines
     dst = dstfile.readLines
   except:
-    stderr.writeLine getCurrentExceptionMsg()
-  finally:
-    logDebug &"[DEBUG] close files"
+    logErr getCurrentExceptionMsg()
+    logDebug &"close files"
     if not srcfile.isNil: srcfile.close
     if not dstfile.isNil: dstfile.close
-  logDebug &"[DEBUG] src:{src}, dst:{dst}"
+    quit 1
+  finally:
+    logDebug &"close files"
+    if not srcfile.isNil: srcfile.close
+    if not dstfile.isNil: dstfile.close
+  logDebug &"src:{src}, dst:{dst}"
 
   let lines = dst.paste(src, x = x, y = y)
-  logDebug &"[DEBUG] lines:{lines}"
+  logDebug &"lines:{lines}"
 
   for line in lines:
     echo line
 
-  logDebug &"[DEBUG] Finish application"
+  logDebug &"Finish application"
