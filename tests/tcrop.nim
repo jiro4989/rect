@@ -37,7 +37,6 @@ suite "cropLine":
     check "abcde".cropLine(x = 1, width = 0) == ""
     check "abcde".cropLine(x = 1, width = -1) == ""
 
-
 suite "crop":
   const data = @["12345", "あいうえお", "678"]
   test "Default position":

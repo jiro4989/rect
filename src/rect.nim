@@ -1,22 +1,28 @@
 const doc = """
-rect is a command to paste rectangle text
+rect is a command to crop/paste rectangle text
 
 Usage:
-  rect [Options] srcFile dstFile
-  rect [Options] dstFile
+  rect crop  [options]
+  rect crop  [options] <srcfile>
+  rect paste [options] <dstfile>
+  rect paste [options] <srcfile> <dstfile>
+  rect (-h | --help)
+  rect (-v | --version)
 
 Options:
-  -x              Position to paste [default: 0]
-  -y              Position to paste [default: 0]
-  -h --help       Show this screen
-  -v --version    Show version
-  -X --debug      Debug mode ON
+  -h --help               Show this screen
+  -v --version            Show version
+  -X --debug              Debug mode ON
+  -x <x>                  Position to paste [default: 0]
+  -y <y>                  Position to paste [default: 0]
+  -W --width <width>      Position to paste [default: 1]
+  -H --height <height>    Position to paste [default: 1]
 """
 
-import rect/util
+import docopt
+import rect/[paste, crop]
 
-import parseopt
-from strutils import parseInt
+from strutils import parseInt, parseBool
 from strformat import `&`
 
 const
@@ -37,67 +43,53 @@ proc readLines(f: File): seq[string] =
   while f.readLine line:
     result.add line
 
-when isMainModule:
-  var optParser = initOptParser()
-
-  var
-    x, y: int
-    files: seq[string]
-  for kind, key, val in optParser.getopt():
-    case kind
-    of cmdArgument:
-      files.add key
-    of cmdLongOption, cmdShortOption:
-        case key
-        of "help", "h":
-          echo doc
-          quit 0
-        of "version", "v":
-          echo version
-          quit 0
-        of "debug", "X":
-          useDebug = true
-        of "x": x = val.parseInt
-        of "y": y = val.parseInt
-    of cmdEnd: assert(false)  # cannot happen
-  logDebug &"command line parameters: x:{x}, y:{y}, files:{files}, debug:{useDebug}"
-
-  var
-    srcfile, dstfile: File
-    src, dst: seq[string]
-  try:
-    case files.len
-    of 2:
-      logDebug &"files.len:2"
-      srcfile = open(files[0])
-      dstfile = open(files[1])
-    of 1:
-      logDebug &"files.len:1, use stdin"
-      srcfile = stdin
-      dstfile = open(files[0])
-    else:
-      logErr "a count of files must be 1 or 2"
-      stderr.writeLine doc
-      quit 1
-
-    src = srcfile.readLines
-    dst = dstfile.readLines
-  except:
-    logErr getCurrentExceptionMsg()
-    logDebug &"close files"
-    if not srcfile.isNil: srcfile.close
-    if not dstfile.isNil: dstfile.close
-    quit 1
-  finally:
-    logDebug &"close files"
-    if not srcfile.isNil: srcfile.close
-    if not dstfile.isNil: dstfile.close
-  logDebug &"src:{src}, dst:{dst}"
-
-  let lines = dst.paste(src, x = x, y = y)
-  logDebug &"lines:{lines}"
-
+proc execCrop(args: Table[string, Value]) =
+  logDebug &"Execute `crop` subcommand: args:{args}"
+  let 
+    x = parseInt($args["-x"])
+    y = parseInt($args["-y"])
+    w = parseInt($args["--width"])
+    h = parseInt($args["--height"])
+    srcFile = $args["<srcfile>"]
+    f = if srcFile == "" or srcFile == "nil": stdin
+        else: open(srcFile)
+  defer: f.close
+  let lines = f.readLines.crop(x=x, y=y, width=w, height=h)
   for line in lines:
     echo line
 
-  logDebug &"Finish application"
+proc execPaste(args: Table[string, Value]) =
+  logDebug &"Execute `paste` subcommand: args:{args}"
+  let 
+    x = parseInt($args["-x"])
+    y = parseInt($args["-y"])
+    srcFile = $args["<srcfile>"]
+    dstFile = $args["<dstfile>"]
+    src = if srcFile == "" or srcFile == "nil": stdin
+          else: open(srcFile)
+    dst = open(dstFile)
+  defer:
+    src.close
+    dst.close
+  let
+    srcData = src.readLines
+    dstData = dst.readLines
+    lines = dstData.paste(srcData, x=x, y=y)
+  for line in lines:
+    echo line
+
+when isMainModule:
+  let args = docopt(doc, version = version)
+  useDebug = parseBool($args["--debug"])
+
+  if args["crop"]:
+    execCrop(args)
+    quit 0
+
+  if args["paste"]:
+    execPaste(args)
+    quit 0
+  
+  logErr "illegal options"
+  stderr.writeLine doc
+  quit 1

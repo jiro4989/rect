@@ -13,6 +13,7 @@ bin           = @["rect"]
 
 requires "nim >= 0.19.4"
 requires "eastasianwidth >= 0.1.0"
+requires "docopt >= 0.6.8"
 
 task docs, "Generate documents":
   exec "nimble doc src/rect.nim -o:docs/rect.html"
