@@ -95,3 +95,7 @@ Options:
 == License
 
 MIT
+
+== Document
+
+* https://jiro4989.github.io/rect/rect.html
