@@ -40,7 +40,8 @@ before_deploy:
 
 deploy:
   provider: releases
-  api_key: "$GITHUB_OAUTH_TOKEN"
+  api_key:
+    secure: cPCzu/Za+PhAIHizpnIWQlDMoJ6MUuNUDgWZLaoediP8owfExvdA1IXvvsYClJmVn9OQV016EsagBLNLA9quEeitmAvu1IZ2ewwgMvPxlT60idBcFsnFX+DrI+OAWVdRhc0AwXdVnD0vnyU60LvweW7baCsW9jCyL3/URieC2+uyq9L2duaM/mnGaX808vNuoN5pD6nL/rx2SHkxjRT+zyc6Irektue58mI9tKpK1t01H9PcyCn289WF2wJaE7DBrJYv2Oxl8zX7pu8ZGvUMYfU57BjQsDg7dSFn/9KfGjr1Ad1WRn+wYGA8dF9Q6qkA9/EsZLfjEl8tCPAfuUvCPkAM12UPEJMYoGhxx9QNA0OHCJRFnSPyG1TO44glgL8OYGG8wl0i3NEapePBTk9Uh+6sUrEfLL9ngAy5W25wynlYZmTcVu4a1kOjBA3540dWMJWZXS+26vrnsKPyfgMQRMWlbdNV46vQaIUxH4gQzxxaH+q9/q0hOlWqqISJdZlw76sRt6AEHHlQHtz0vuZ2tH3/MTaVrdeSbPGr8zvw5rcWWcOrcDzHNBl9XLwtdJjCBqZyxeJc1Qc++Aj4cL+YpYdS0oU8Iy9/iRN6hPeeljIfXKf+5rT86DwjCr9RXCLXWdQE4npzBMCLXRdjIxurLmqXmuk9Ikrj+iZzQQAVaxw=
   keep-history: false
   skip_cleanup: true
   file: ${APP_NAME}_${TRAVIS_OS_NAME}.tar.gz
