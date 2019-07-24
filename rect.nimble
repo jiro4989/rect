@@ -1,6 +1,6 @@
 # Package
 
-version       = "1.0.0"
+version       = "1.0.1"
 author        = "jiro4989"
 description   = "rect is a command to crop/paste rectangle text."
 license       = "MIT"

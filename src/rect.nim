@@ -26,7 +26,10 @@ from strutils import parseInt, parseBool
 from strformat import `&`
 
 const
-  version = "v1.0.0"
+  version = """rect version 1.0.1
+Copyright (c) 2019 jiro4989
+Released under the MIT License.
+https://github.com/jiro4989/rect"""
 
 var
   useDebug: bool
